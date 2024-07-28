@@ -136,6 +136,6 @@ app.post('/eval/player', express.json(), (req, res) => {
 });
 
 // Start the HTTPS server
-server.listen(8080, () => {
-    console.log('Server running on port 8080');
+server.listen(443, () => {
+    console.log('Server running on port 443');
 });
